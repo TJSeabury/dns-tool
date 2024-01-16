@@ -10,7 +10,7 @@ fi
 # If the domain is not the bare domain, inform the user of the proper usage, then extract the bare domain from the input domain and use that as $1 instead.
 if [[ $1 == *"."*"."* ]]; then
   echo "Usage: $0 <domain>"
-  echo "Please provide the bare domain, not a subdomain."
+  echo "Please provide the bare domain, not a subdomain. You fool!"
   domain=$(echo $1 | cut -d "." -f 2-)
   echo "Using $domain as the domain."
   sleep 5
