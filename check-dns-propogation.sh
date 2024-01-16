@@ -74,12 +74,21 @@ display_records() {
   tput cup 0 0
   echo -e "\e[32mWatching DNS records for $1:\e[0m"
   echo -e "\e[37mPress Ctrl+C to exit.\e[0m\n"
-  printf "%-20s %-20s %-20s\n" "DNS Server" "A_@" "A_WWW"
+  printf "%-16s %-16s %-16s\n" "DNS Server" "A_@" "A_WWW"
   for server in "${dns_servers[@]}"
   do
-    ip_address_at=$(dig +short $1 A @${server%%/*})
-    ip_address_www=$(dig +short www.$1 A @${server%%/*})
-    printf "\e[34m%-20s %-20s %-20s\e[0m\n" "$server" "$ip_address_at" "$ip_address_www"
+    # Use mapfile to read the output of dig into an array
+    mapfile -t ip_addresses_at < <(dig +short $1 A @${server%%/*})
+    mapfile -t ip_addresses_www < <(dig +short www.$1 A @${server%%/*})
+
+    # Loop over the arrays and print each IP address on a separate line
+    for ((i=0; i<${#ip_addresses_at[@]}; i++)); do
+      if [ $i -eq 0 ]; then
+        printf "\e[34m%-16s %-16s %-16s\e[0m\n" "$server" "${ip_addresses_at[i]}" "${ip_addresses_www[i]}"
+      else
+        printf "\e[34m%-16s %-16s %-16s\e[0m\n" " " "${ip_addresses_at[i]}" "${ip_addresses_www[i]}"
+      fi
+    done
   done
 }
 
